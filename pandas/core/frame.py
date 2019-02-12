@@ -1850,7 +1850,7 @@ class DataFrame(NDFrame):
 
     @deprecate_kwarg(old_arg_name='encoding', new_arg_name=None)
     def to_stata(self, fname, convert_dates=None, write_index=True,
-                 encoding="latin-1", byteorder=None, time_stamp=None,
+                 encoding="utf-8", byteorder=None, time_stamp=None,
                  data_label=None, variable_labels=None, version=114,
                  convert_strl=None):
         """
@@ -1934,9 +1934,11 @@ class DataFrame(NDFrame):
         >>> df.to_stata('animals.dta')  # doctest: +SKIP
         """
         kwargs = {}
-        if version not in (114, 117):
-            raise ValueError('Only formats 114 and 117 supported.')
-        if version == 114:
+        if version not in (114, 117, 118):
+            raise ValueError('Only formats 114, 117, and 118 supported.')
+        if version == 118 or encoding == 'utf-8':
+            from pandas.io.stata import StataWriter118 as statawriter
+        elif version == 114:
             if convert_strl is not None:
                 raise ValueError('strl support is only available when using '
                                  'format 117')
